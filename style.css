@@ -1,0 +1,25 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevent scrolling */
+    margin: 0;
+    padding-top: 40px; /* Space from the top */
+    padding-bottom: 40px; /* Space from the bottom */
+    padding-right: 1px; /* Space from the right */
+    padding-left: 1px; /* Space from the left */
+    background-color: lightsteelblue;
+}
+
+
+/* Style for mobile-first */
+canvas {
+    display: block;
+    margin: 0 auto;
+    background: black;
+    width: 100%; /* Take up full width of the screen */
+    max-width: 600px; /* Limit to 600px on larger screens */
+    height: calc(100vw * 1.5);
+    max-height: 90vh;
+   
+}
