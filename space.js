@@ -17,6 +17,21 @@ const ship = {
     height: 0,
 };
 
+// alien properties are initialized to 0 and calculated after canvas resize
+let alienArray = [];
+let alien = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+};
+
+let alienImg;
+let alienRows = 2;
+let alienColumns = 3;
+let alienCount = 0; //number of aliens to defeat
+
+
 let touchX = null; // Stores the initial touch position for mobile
 
 function resizeCanvas() {
@@ -31,23 +46,34 @@ function resizeCanvas() {
     tileHeight = canvas.height / rows;
 
     // Recalculate ship position and size after resizing
-    ship.x = canvas.width / 2 - tileWidth; // 2 tiles left from center for horizontal centering
+    ship.x = canvas.width / 2 - tileWidth;
     ship.y = canvas.height - tileHeight * 2;
-    ship.width = tileWidth * 2; // Ship spans 2 tiles wide
-    ship.height = tileHeight * 2; // Ship spans 2 tiles tall
-    shipVelocityX = tileWidth; // ship speed
+    ship.width = tileWidth * 2;
+    ship.height = tileHeight * 2;
+    shipVelocityX = tileWidth;
+
+    // Recalculate alien size based on tile size
+    alien.width = tileWidth;
+    alien.height = tileHeight;
 
     // Load ship image after resizing
     shipImg = new Image();
     shipImg.src = "./ship.png";
     shipImg.onload = function() {
-        context.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing the new ship
+        context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
+    }
+
+    // Load alien image and create aliens after the image loads
+    alienImg = new Image();
+    alienImg.src = "./purplealien.png";
+    alienImg.onload = function() {
+        createAliens(); // Create aliens after alien image has loaded
     }
 
     requestAnimationFrame(update);
     document.addEventListener("keydown", moveShip);
-    addTouchEvents(); // Add touch events for mobile
+    addTouchEvents();
 }
 
 // Call resizeCanvas once on page load to initialize everything
@@ -57,11 +83,24 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // Animation and rendering loop
+// Adjust the update function to ensure aliens are drawn
 function update() {
-    context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before each frame
-    context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height); // Draw ship at the updated position
-    requestAnimationFrame(update); // Continue the animation loop
+    context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+    // Draw ship
+    context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
+
+    // Draw aliens
+    for(let i = 0; i < alienArray.length; i++) {
+        let alien = alienArray[i];
+        if (alien.alive) {
+            context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+        }
+    }
+
+    requestAnimationFrame(update);
 }
+
 
 // Keyboard control function
 function moveShip(e) {
@@ -108,3 +147,25 @@ function handleTouchMove(event) {
 canvas.addEventListener('touchend', () => {
     touchX = null;
 });
+
+// Adjust createAliens function
+function createAliens() {
+    alienArray = []; // Clear array to avoid duplications
+
+    for(let c = 0; c < alienColumns; c++) {
+        for(let r = 0; r < alienRows; r++) {
+            let alienX = tileWidth + c * alien.width* 1.5; 
+            let alienY = tileHeight + r * alien.height * 1.5;
+            let newAlien = {
+                x: alienX,
+                y: alienY,
+                width: alien.width,
+                height: alien.height,
+                alive: true,
+            };
+
+            alienArray.push(newAlien);
+        }
+    }
+    alienCount = alienArray.length;
+}
