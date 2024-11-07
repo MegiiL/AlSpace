@@ -36,7 +36,6 @@ let alienVelocityX = 1; //speed of aliens
 let bulletArray = [];
 let bulletVelocityY = -10; //bullet speed 
 
-
 let touchX = null; // Stores the initial touch position for mobile
 
 
@@ -172,20 +171,26 @@ function moveShip(e) {
     }
 }
 
-// Touch control functions for mobile dragging
+// Add touch-based shooting and ship movement
 function addTouchEvents() {
     canvas.addEventListener('touchstart', handleTouchStart, false);
     canvas.addEventListener('touchmove', handleTouchMove, false);
-    canvas.addEventListener('touchstart', shoot, false); // Fire bullet on tap
+    canvas.addEventListener('touchend', handleTouchEnd, false);
 }
 
-// Handle touch start
+// Handle touch start (for moving the ship and shooting)
 function handleTouchStart(event) {
     const touch = event.touches[0];
     touchX = touch.clientX; // Store the initial touch position
+
+    // Check if the touch was a tap in the area of the ship to shoot
+    // If touch is at the bottom of the screen (near the ship), shoot
+    if (touch.clientY > canvas.height - ship.height) {
+        shoot(event); // Trigger shooting when the user taps near the ship
+    }
 }
 
-// Handle touch movement
+// Handle touch movement (for moving the ship)
 function handleTouchMove(event) {
     if (touchX === null) return; // No touch start, so ignore move
 
@@ -204,10 +209,12 @@ function handleTouchMove(event) {
     }
 }
 
+
 // Reset touch position when touch ends
-canvas.addEventListener('touchend', () => {
-    touchX = null;
-});
+function handleTouchEnd() {
+    touchX = null; // Reset touch position when the touch ends
+}
+
 
 // Adjust createAliens function
 function createAliens() {
@@ -232,10 +239,9 @@ function createAliens() {
 }
 
 
-// Adjust the shoot function to handle bullets for both touch and keyboard
 function shoot(e) {
     // Fire a bullet if Space key is pressed or if called by touch event
-    if (!e || e.type === 'touchstart' || e.code === "Space") {
+    if (e === null || e.type === 'touchstart' || e.code === "Space") {
         let bullet = {
             x: ship.x + ship.width * 15 / 32,
             y: ship.y,
