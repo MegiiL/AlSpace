@@ -179,6 +179,16 @@ function addTouchEvents() {
     canvas.addEventListener('touchstart', handleTouchStart, false);
     canvas.addEventListener('touchmove', handleTouchMove, false);
     canvas.addEventListener('touchend', handleTouchEnd, false);
+
+    // Prevent default touch behavior on the canvas to avoid context menu and selection
+    canvas.addEventListener('touchstart', preventDefaultTouch, false);
+    canvas.addEventListener('touchmove', preventDefaultTouch, false);
+    canvas.addEventListener('touchend', preventDefaultTouch, false);
+}
+
+// Prevent the default touch behavior (such as text selection and context menu)
+function preventDefaultTouch(event) {
+    event.preventDefault();
 }
 
 // Handle touch start (for moving the ship and shooting)
@@ -192,6 +202,7 @@ function handleTouchStart(event) {
         shoot(event); // Trigger shooting when the user taps near the ship
     }
 }
+
 
 // Handle touch movement (for moving the ship)
 function handleTouchMove(event) {
@@ -218,7 +229,6 @@ function handleTouchEnd() {
     touchX = null; // Reset touch position when the touch ends
 }
 
-
 // Adjust createAliens function
 function createAliens() {
     alienArray = []; // Clear array to avoid duplications
@@ -242,6 +252,7 @@ function createAliens() {
 }
 
 
+// Adjust the shoot function to handle bullets for both touch and keyboard
 function shoot(e) {
     // Fire a bullet if Space key is pressed or if called by touch event
     if (e === null || e.type === 'touchstart' || e.code === "Space") {
