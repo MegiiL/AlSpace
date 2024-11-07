@@ -36,6 +36,10 @@ let alienVelocityX = 1; //speed of aliens
 let bulletArray = [];
 let bulletVelocityY = -10; //bullet speed 
 
+
+let score= 0;
+let gameOver= false;
+
 let touchX = null; // Stores the initial touch position for mobile
 
 
@@ -92,6 +96,9 @@ window.addEventListener('resize', resizeCanvas);
 
 // Adjust the update function to ensure aliens are drawn
 function update() {
+    if(gameOver){
+        return;
+    }
     context.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
 
     // Draw ship
@@ -113,6 +120,10 @@ function update() {
 
             // Draw each alien
             context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+        
+            if(alien.y >= ship.y){
+                gameOver= true;
+            }
         }
     }
 
@@ -140,6 +151,7 @@ function update() {
                 bullet.used = true;
                 alien.alive = false;
                 alienCount--;
+                score +=100;
             }
         }
     }
@@ -153,11 +165,16 @@ function update() {
     if (alienCount == 0) {
         alienColumns = Math.min(alienColumns + 1, columns / 2 - 5); // increase nr of columns with 1 for next level - max 7 columns of aliens
         alienRows = Math.min(alienRows + 1, rows - 9); // increase nr of rows with 1 for next level - max 7 rows of aliens
-        alienVelocityX = Math.sign(alienVelocityX) * (Math.abs(alienVelocityX) + 2); // Increase speed while keeping direction
+        alienVelocityX = Math.sign(alienVelocityX) * (Math.abs(alienVelocityX) + 1); // Increase speed while keeping direction
         alienArray = [];
         bulletArray = [];
         createAliens();
     }
+
+    //score
+    context.fillStyle="white";
+    context.font="16 px courier";
+    context.fillText(score, 5, 20);
 
     requestAnimationFrame(update);
 }
@@ -166,6 +183,9 @@ function update() {
 
 // Keyboard control function
 function moveShip(e) {
+    if(gameOver){
+        return;
+    }
     if ((e.code === "ArrowLeft" || e.code === "KeyA") && ship.x - shipVelocityX >= 0) {
         ship.x -= shipVelocityX; // Move left one tile
     }
@@ -254,6 +274,9 @@ function createAliens() {
 
 // Adjust the shoot function to handle bullets for both touch and keyboard
 function shoot(e) {
+    if(gameOver){
+        return;
+    }
     // Fire a bullet if Space key is pressed or if called by touch event
     if (e === null || e.type === 'touchstart' || e.code === "Space") {
         let bullet = {
