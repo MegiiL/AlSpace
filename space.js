@@ -84,6 +84,9 @@ function resizeCanvas() {
 // Call resizeCanvas once on page load to initialize everything
 resizeCanvas();
 
+// Add touch events to handle shooting and moving the ship
+addTouchEvents();
+
 // Update canvas on window resize
 window.addEventListener('resize', resizeCanvas);
 
