@@ -176,6 +176,7 @@ function moveShip(e) {
 function addTouchEvents() {
     canvas.addEventListener('touchstart', handleTouchStart, false);
     canvas.addEventListener('touchmove', handleTouchMove, false);
+    canvas.addEventListener('touchstart', shoot, false); // Fire bullet on tap
 }
 
 // Handle touch start
@@ -231,18 +232,21 @@ function createAliens() {
 }
 
 
-function shoot(e){
-    if (e.code == "Space"){
+// Adjust the shoot function to handle bullets for both touch and keyboard
+function shoot(e) {
+    // Fire a bullet if Space key is pressed or if called by touch event
+    if (!e || e.type === 'touchstart' || e.code === "Space") {
         let bullet = {
-            x: ship.x + ship.width* 15/32,
+            x: ship.x + ship.width * 15 / 32,
             y: ship.y,
-            width: tileWidth/8,
-            height: tileHeight/3,
+            width: tileWidth / 8,
+            height: tileHeight / 3,
             used: false,
-        }
+        };
         bulletArray.push(bullet);
     }
 }
+
 
 function Collision(a,b){
     return a.x < b.x + b.width &&  // a top left corner doesn't reach b's top right corner
